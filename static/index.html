@@ -7,11 +7,10 @@
 </head>
 <body>
   <h1>Bears</h1>
+  <p>Click "Get Bears" button to show the list of records in the database. Hover over a bear to see the ID.</p>
   <ul id="bears"></ul>
   <button onClick="getBears()">Get Bears</button>
-  <form id="save_bear_form">
-  <p>Add a bear : </p><input type="text" name="name"  id="save_bear"/> <button onClick="saveBear()">Save</button>
-  </form>
+  <p>Add a bear : <input type="text" name="name"  id="save_bear"/> <button onClick="saveBear()">Save</button></p>
 </body>
 <script>
   function createNode(element) {
@@ -22,9 +21,17 @@
     return parent.appendChild(el);
   }
 
+  function removeChild(root) {
+    while ( root.firstChild ) {
+      root.removeChild( root.firstChild );
+    }
+  }
   function getBears(){
       const ul = document.getElementById('bears');
       const url = '/api/bears';
+
+      removeChild(ul); // remove list elements if there are any
+
       fetch(url)
       .then((resp) => resp.json())
       .then(function(data) {
@@ -48,8 +55,12 @@
       	method: 'post',
       	headers: {'Content-Type': 'application/json'},
       	body: JSON.stringify({name: document.getElementById('save_bear').value})
-      });
+      })
+      .then(getBears()); // load the new list
 
     }
+    
+    // Uncomment the line below to populate the page when first loaded
+    // getBears();
 </script>
 </html>
