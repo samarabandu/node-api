@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Bears Demo</title>
+  <link href="bears.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+  <h1>Bears</h1>
+  <ul id="bears"></ul>
+  <button onClick="getBears()">Get Bears</button>
+  <form id="save_bear_form">
+  <p>Add a bear : </p><input type="text" name="name"  id="save_bear"/> <button onClick="saveBear()">Save</button>
+  </form>
+</body>
+<script>
+  function createNode(element) {
+      return document.createElement(element);
+  }
+
+  function append(parent, el) {
+    return parent.appendChild(el);
+  }
+
+  function getBears(){
+      const ul = document.getElementById('bears');
+      const url = '/api/bears';
+      fetch(url)
+      .then((resp) => resp.json())
+      .then(function(data) {
+        console.log(data);
+        return data.map(function(bear) {
+          let li = createNode('li'),
+            span = createNode('span');
+          span.innerHTML = bear.name;
+          span.setAttribute("title", `ID: ${bear._id}`)
+          append(li, span);
+          append(ul, li);
+        })
+      })
+      .catch(function(error) {
+        console.log(JSON.stringify(error));
+      });
+    }
+    
+    function saveBear() {
+      fetch('/api/bears', {
+      	method: 'post',
+      	headers: {'Content-Type': 'application/json'},
+      	body: JSON.stringify({name: document.getElementById('save_bear').value})
+      });
+
+    }
+</script>
+</html>
